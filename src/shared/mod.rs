@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use thiserror::Error;
 
-#[cfg(feature = "windows")]
+#[cfg(target_os = "windows")]
 pub mod windows_exception;
 pub mod exception;
 pub mod ptr;

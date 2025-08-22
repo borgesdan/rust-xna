@@ -1,6 +1,6 @@
-#[cfg(feature = "windows")]
+#[cfg(target_os = "windows")]
 pub mod windows_game_window;
-#[cfg(feature = "windows")]
+#[cfg(target_os = "windows")]
 use crate::framework::game::windows_game_window::WindowsGameWindow;
 use crate::shared::Ptr;
 
@@ -15,7 +15,7 @@ pub struct GameWindow {
     y: i32,
     is_fullscreen: bool,
 
-    #[cfg(feature = "windows")]
+    #[cfg(target_os = "windows")]
     platform: WindowsGameWindow,
 }
 

@@ -27,6 +27,8 @@ impl GameWindow {
     }
 
     pub fn create(&mut self) -> XnaResult<()> {
+        self.sanitize();
+
         unsafe {
             let class_name =  "XnaGameWindow".to_wide();
             let h_module = GetModuleHandleW(None)
@@ -72,6 +74,16 @@ impl GameWindow {
             }
 
             Ok(())
+        }
+    }
+
+    fn sanitize(&mut self)  {
+        if self.width == 0 {
+            self.width = 800;
+        }
+
+        if self.height == 0 {
+            self.height = 480;
         }
     }
 
