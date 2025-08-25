@@ -1,6 +1,11 @@
 #[cfg(target_os = "windows")]
 pub mod windows_game_window;
 #[cfg(target_os = "windows")]
+pub mod windows_game;
+
+mod game;
+
+#[cfg(target_os = "windows")]
 use crate::framework::game::windows_game_window::WindowsGameWindow;
 use crate::shared::Ptr;
 
@@ -27,10 +32,17 @@ pub enum GameWindowStyle {
     BorderlessFullScreen
 }
 
-pub struct RefGame {
+#[derive(Default, PartialEq, Eq, Copy, Clone, Debug)]
+pub struct GameTime {
 
 }
 
+#[derive(Default, PartialEq, Eq, Clone, Debug)]
+pub struct RefGame {
+    game_window: GameWindow,
+}
+
+#[derive(Default, PartialEq, Eq, Clone, Debug)]
 pub struct Game {
     reference: Ptr<RefGame>
 }

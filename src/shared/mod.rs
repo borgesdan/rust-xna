@@ -53,3 +53,10 @@ pub struct Ptr<T> {
 
 ///Tipo de Resultado padrão do Xna.
 pub type XnaResult<T> = Result<T, Exception>;
+
+#[macro_export]
+macro_rules! null_pointer_exception {
+    () => {
+        Exception::throw("The pointer is null", None, file!(), line!(), column!())
+    };
+}

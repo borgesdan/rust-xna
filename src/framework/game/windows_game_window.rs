@@ -15,6 +15,10 @@ pub struct WindowsGameWindow {
     hwnd: HWND
 }
 
+impl WindowsGameWindow {
+    pub fn get_hwnd(&self) -> HWND { self.hwnd }
+}
+
 impl GameWindow {
     ///Close the window.
     pub fn close(&self) -> XnaResult<()> {
