@@ -5,6 +5,7 @@ pub mod windows_game;
 
 mod game;
 
+use crate::csharp::TimeSpan;
 #[cfg(target_os = "windows")]
 use crate::framework::game::windows_game_window::WindowsGameWindow;
 use crate::shared::Ptr;
@@ -34,7 +35,9 @@ pub enum GameWindowStyle {
 
 #[derive(Default, PartialEq, Eq, Copy, Clone, Debug)]
 pub struct GameTime {
-
+    pub elapsed_time: TimeSpan,
+    pub is_slowly: bool,
+    pub total_time: TimeSpan,
 }
 
 #[derive(Default, PartialEq, Eq, Clone, Debug)]
