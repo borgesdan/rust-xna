@@ -1,7 +1,5 @@
 #[cfg(target_os = "windows")]
 pub mod windows_game_window;
-#[cfg(target_os = "windows")]
-pub mod windows_game;
 pub mod game;
 pub mod step_timer;
 
