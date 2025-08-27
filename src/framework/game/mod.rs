@@ -1,11 +1,9 @@
-#[cfg(target_os = "windows")]
-pub mod windows_game_window;
 pub mod game;
 pub mod step_timer;
+pub mod game_window;
 
 use crate::csharp::TimeSpan;
-#[cfg(target_os = "windows")]
-use crate::framework::game::windows_game_window::WindowsGameWindow;
+use crate::framework::game::game_window::WindowsGameWindow;
 use crate::shared::Ptr;
 
 #[derive(Debug, Default, Eq, PartialEq, Clone)]
