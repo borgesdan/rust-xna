@@ -1,5 +1,20 @@
 use crate::shared::{Exception, ExceptionConverter, SilentExceptionConverter};
 
+/// Macro para criar o erro automaticamente com file/line/column
+#[macro_export]
+macro_rules! exception {
+    ($msg:expr, $inner:expr) => {
+        Exception::throw($msg, $inner, file!(), line!(), column!())
+    };
+}
+
+#[macro_export]
+macro_rules! null_pointer_exception {
+    () => {
+        Exception::throw("The pointer is null", None, file!(), line!(), column!())
+    };
+}
+
 impl Exception {
     pub fn new(message: &str, inner: Option<Exception>) -> Self {
         Exception {

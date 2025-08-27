@@ -19,14 +19,6 @@ pub struct Exception {
     pub file: Option<String>,
 }
 
-/// Macro para criar o erro automaticamente com file/line/column
-#[macro_export]
-macro_rules! exception {
-    ($msg:expr, $inner:expr) => {
-        Exception::throw($msg, $inner, file!(), line!(), column!())
-    };
-}
-
 ///Um trait que facilita disparos de exceções, por exemplo, para um Option<T>.
 pub trait ExceptionConverter<T> {
     fn unwrap_or_exception(self, message: &str) -> Result<T, Exception>;
@@ -53,10 +45,3 @@ pub struct Ptr<T> {
 
 ///Tipo de Resultado padrão do Xna.
 pub type XnaResult<T> = Result<T, Exception>;
-
-#[macro_export]
-macro_rules! null_pointer_exception {
-    () => {
-        Exception::throw("The pointer is null", None, file!(), line!(), column!())
-    };
-}
