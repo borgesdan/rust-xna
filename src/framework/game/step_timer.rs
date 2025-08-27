@@ -32,7 +32,7 @@ impl StepTimer {
         Ok(())
     }
 
-    pub fn tick<FUpdate>(&mut self,update: &mut FUpdate) -> XnaResult<()> where FUpdate: FnMut() -> XnaResult<()>{
+    pub fn tick<FUpdate>(&mut self,update: &mut FUpdate) -> XnaResult<()> where FUpdate: FnMut(&StepTimer) -> XnaResult<()>{
         let mut current_time : i64 = 0;
 
         if cfg!(target_os = "windows") {
@@ -69,7 +69,7 @@ impl StepTimer {
                     self.left_over_ticks = self.left_over_ticks - self.target_elapsed_ticks;
                     self.frame_count = self.frame_count + 1;
 
-                    update()?;
+                    update(self)?;
                 } else {
                     break;
                 }
@@ -80,7 +80,7 @@ impl StepTimer {
             self.left_over_ticks = 0;
             self.frame_count = self.frame_count + 1;
 
-            update()?;
+            update(self)?;
         }
 
         if self.frame_count != last_frame_count {

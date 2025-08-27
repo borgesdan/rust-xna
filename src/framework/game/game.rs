@@ -1,4 +1,4 @@
-use crate::framework::game::{Game, GameTime, GameWindow, RefGame};
+use crate::framework::game::{Game, GameTime, GameWindow, RefGame, StepTimer};
 use crate::null_pointer_exception;
 use crate::shared::{Ptr, XnaResult, Exception};
 

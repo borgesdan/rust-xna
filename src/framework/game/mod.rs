@@ -62,6 +62,8 @@ pub struct StepTimer {
 #[derive(Default, PartialEq, Eq, Clone, Debug)]
 pub struct RefGame {
     game_window: GameWindow,
+    step_timer: StepTimer,
+    game_time: GameTime
 }
 
 #[derive(Default, PartialEq, Eq, Clone, Debug)]
