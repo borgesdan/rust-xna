@@ -4,6 +4,7 @@ use crate::framework::game::{Game, GameTime, GameWindow, RefGame, StepTimer};
 use crate::null_pointer_exception;
 use crate::shared::{Ptr, XnaResult, Exception};
 
+
 impl Game {
     pub fn new() -> Self {
         Self {

@@ -9,6 +9,53 @@ use crate::framework::game::{GameWindow, GameWindowStyle};
 use crate::shared::{ExceptionConverter, XnaResult, Exception};
 use crate::shared::string_helper::ToWide;
 
+impl GameWindow {
+    ///Close the window.
+    pub fn close(&self) -> XnaResult<()> {
+        if cfg!(target_os = "windows") {
+            WindowsGameWindow::close(self.platform.hwnd)?
+        }
+
+        Ok(())
+    }
+
+    pub fn create(&mut self) -> XnaResult<()> {
+        self.sanitize();
+
+        if cfg!(target_os = "windows") {
+            let result = WindowsGameWindow::create(self)?;
+            self.platform.hwnd = result.0;
+            self.x = result.1;
+            self.y = result.2;
+        }
+
+        Ok(())
+    }
+
+    fn sanitize(&mut self)  {
+        if self.width == 0 {
+            self.width = 800;
+        }
+
+        if self.height == 0 {
+            self.height = 480;
+        }
+    }
+
+    pub fn update(&mut self) -> Result<(), Exception> {
+        if self.style == GameWindowStyle::Windowed {
+            if cfg!(target_os = "windows") {
+                let result = WindowsGameWindow::update(self.platform.hwnd, self)?;
+                self.x = result.0;
+                self.y = result.1;
+            }
+
+        }
+
+        Ok(())
+    }
+}
+
 #[cfg(target_os = "windows")]
 #[derive(Debug, Default, Eq, PartialEq, Clone, Copy)]
 pub struct WindowsGameWindow {
@@ -135,52 +182,5 @@ impl WindowsGameWindow {
                 _ => DefWindowProcW(hwnd, msg, wparam, lparam),
             }
         }
-    }
-}
-
-impl GameWindow {
-    ///Close the window.
-    pub fn close(&self) -> XnaResult<()> {
-        if cfg!(target_os = "windows") {
-            WindowsGameWindow::close(self.platform.hwnd)?
-        }
-
-        Ok(())
-    }
-
-    pub fn create(&mut self) -> XnaResult<()> {
-        self.sanitize();
-
-        if cfg!(target_os = "windows") {
-            let result = WindowsGameWindow::create(self)?;
-            self.platform.hwnd = result.0;
-            self.x = result.1;
-            self.y = result.2;
-        }
-
-        Ok(())
-    }
-
-    fn sanitize(&mut self)  {
-        if self.width == 0 {
-            self.width = 800;
-        }
-
-        if self.height == 0 {
-            self.height = 480;
-        }
-    }
-
-    pub fn update(&mut self) -> Result<(), Exception> {
-        if self.style == GameWindowStyle::Windowed {
-            if cfg!(target_os = "windows") {
-                let result = WindowsGameWindow::update(self.platform.hwnd, self)?;
-                self.x = result.0;
-                self.y = result.1;
-            }
-
-        }
-
-        Ok(())
     }
 }
