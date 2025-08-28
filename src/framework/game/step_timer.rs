@@ -1,6 +1,5 @@
 use windows::Win32::System::Performance::{QueryPerformanceCounter, QueryPerformanceFrequency};
 use crate::exception;
-use crate::shared::Exception;
 use crate::framework::game::StepTimer;
 use crate::shared::{ExceptionConverter, XnaResult};
 
@@ -153,7 +152,7 @@ impl StepTimer {
 
     fn win_apply_initial_values(&mut self) -> XnaResult<()>{
         unsafe {
-            Self::win_query_performance_counter(&mut self.last_time)?;
+            Self::win_query_performance_counter(&mut self.frequency)?;
             Self::win_query_perfomance_frequency(&mut self.last_time)
         }
     }

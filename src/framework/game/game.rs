@@ -1,8 +1,8 @@
 use windows::Win32::UI::WindowsAndMessaging::{DispatchMessageW, PeekMessageW, TranslateMessage, MSG, PM_REMOVE, WM_QUIT};
 use crate::csharp::TimeSpan;
 use crate::framework::game::{Game, GameTime, GameWindow, RefGame, StepTimer};
-use crate::null_pointer_exception;
-use crate::shared::{Ptr, XnaResult, Exception};
+use crate::{exception, null_pointer_exception};
+use crate::shared::{Ptr, XnaResult, Exception, exception};
 
 
 impl Game {
@@ -11,21 +11,42 @@ impl Game {
             reference: Ptr::new(RefGame::default()),
         }
     }
-    
-    pub fn initialize(&mut self) -> XnaResult<()> {
+
+    pub fn run(&mut self) -> XnaResult<()> {
         if self.reference.is_null() {
             self.reference = Ptr::new(RefGame::default());
         }
-        
+
         let mut window = GameWindow::default();
         let result = window.create();
 
         if result.is_err() {
             println!("{}", result.err().unwrap());
-        } else {
-            self.start_game_loop()?
+            return Err(exception!("", None));
+            //TODO: remover isso aqui
         }
-        
+
+        self.set_game_window(&window)?;
+
+        if self.get_is_running()? {
+            return Err(exception!("Game already running.", None));
+        }
+
+        if !self.get_game_window()?.is_created() {
+            return Err(exception!("Window is not created.", None));
+        }
+
+        self.initialize()?;
+        self.set_is_running(true)?;
+
+        self.start_game_loop()?;
+
+        Ok(())
+    }
+
+    pub fn initialize(&mut self) -> XnaResult<()> {
+        self.load_content()?;
+
         Ok(())
     }
 
@@ -68,8 +89,8 @@ impl Game {
         Ok(())
     }
     
-    pub fn load_content() -> XnaResult<()> {
-        unimplemented!()
+    pub fn load_content(&mut self) -> XnaResult<()> {
+        Ok(())
     }
     
     pub fn update(&mut self, game_time: &GameTime) -> XnaResult<()> {
@@ -114,6 +135,15 @@ impl Game {
         Ok(window)
     }
 
+    pub fn set_game_window(&mut self, game_window: &GameWindow) -> XnaResult<()> {
+        let mut game = self.reference
+            .try_get_mut(null_pointer_exception!())?;
+
+        game.game_window = game_window.clone();
+
+        Ok(())
+    }
+
     pub fn get_step_timer(&self) -> XnaResult<StepTimer> {
         let timer = self.reference
             .try_get(null_pointer_exception!())?
@@ -131,6 +161,23 @@ impl Game {
 
         Ok(())
     }
+
+    pub fn get_is_running(&self) -> XnaResult<bool> {
+        let is_running = self.reference
+            .try_get(null_pointer_exception!())?
+            .is_running;
+
+        Ok(is_running)
+    }
+
+    pub fn set_is_running(&mut self, is_running: bool) -> XnaResult<()> {
+        let mut game = self.reference
+            .try_get_mut(null_pointer_exception!())?;
+
+        game.is_running = is_running;
+
+        Ok(())
+    }
 }
 
 #[cfg(target_os = "windows")]
@@ -145,7 +192,7 @@ impl Game {
                     let _ = TranslateMessage(&msg);
                     let _ = DispatchMessageW(&msg);
                 } else {
-                    //TODO
+                    self.tick()?;
                 }
 
                 if msg.message == WM_QUIT || msg.message == 0
@@ -157,4 +204,5 @@ impl Game {
         
         Ok(())
     }
+
 }

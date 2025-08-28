@@ -6,7 +6,7 @@ mod csharp;
 
 fn main() {
     let mut game = Game::new();
-    let mut result = game.initialize();
+    let mut result = game.run();
 
     if result.is_err() {
        println!("{}", result.err().unwrap());

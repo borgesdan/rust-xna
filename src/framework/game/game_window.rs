@@ -54,6 +54,10 @@ impl GameWindow {
 
         Ok(())
     }
+
+    pub fn is_created(&self) -> bool {
+        !self.platform.hwnd.is_invalid()
+    }
 }
 
 #[cfg(target_os = "windows")]

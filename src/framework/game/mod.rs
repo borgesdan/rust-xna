@@ -59,7 +59,8 @@ pub struct StepTimer {
 pub struct RefGame {
     game_window: GameWindow,
     step_timer: StepTimer,
-    game_time: GameTime
+    game_time: GameTime,
+    is_running: bool,
 }
 
 #[derive(Default, PartialEq, Eq, Clone, Debug)]

@@ -4,7 +4,7 @@ use crate::shared::{Exception, ExceptionConverter, SilentExceptionConverter};
 #[macro_export]
 macro_rules! exception {
     ($msg:expr, $inner:expr) => {
-        Exception::throw($msg, $inner, file!(), line!(), column!())
+        crate::shared::Exception::throw($msg, $inner, file!(), line!(), column!())
     };
 }
 
