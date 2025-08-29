@@ -1,15 +1,20 @@
-use windows::Win32::UI::WindowsAndMessaging::{DispatchMessageW, PeekMessageW, TranslateMessage, MSG, PM_REMOVE, WM_QUIT};
+use windows::Win32::UI::WindowsAndMessaging::{DispatchMessageW, IsWindow, PeekMessageW, TranslateMessage, MSG, PM_REMOVE, WM_QUIT, WTS_CONSOLE_DISCONNECT};
 use crate::csharp::TimeSpan;
-use crate::framework::game::{Game, GameTime, GameWindow, RefGame, StepTimer};
+use crate::framework::game::{Game, MyGame, GameHandler, GameTime, GameWindow, RefGame, StepTimer};
 use crate::{exception, null_pointer_exception};
 use crate::shared::{Ptr, XnaResult, Exception, exception};
 
 
 impl Game {
-    pub fn new() -> Self {
+    pub fn new(my_game: Box<dyn MyGame>) -> Self {
         Self {
             reference: Ptr::new(RefGame::default()),
+            my_game,
         }
+    }
+
+    pub fn change(&mut self, my_game: Box<dyn MyGame>) {
+        self.my_game = my_game
     }
 
     pub fn run(&mut self) -> XnaResult<()> {
@@ -44,12 +49,6 @@ impl Game {
         Ok(())
     }
 
-    pub fn initialize(&mut self) -> XnaResult<()> {
-        self.load_content()?;
-
-        Ok(())
-    }
-
     pub fn start_game_loop(&mut self) -> XnaResult<()> {
         self.init_step_timer()?;        
         
@@ -75,38 +74,54 @@ impl Game {
             };
 
             self.set_game_time(&game_time)?;
-            //TODO: self.update();
+            self.update(&game_time)?;
 
             Ok(())
         };
 
         timer.tick(&mut lambda)?;
-
         self.set_step_timer(timer)?;
 
-        //TODO: implementar restante do código
+        self.draw(&self.get_game_time()?)?;
 
         Ok(())
     }
-    
+
+    pub fn initialize(&mut self) -> XnaResult<()> {
+        let game = GameHandler {
+            game: self.reference.clone(),
+        };
+
+        self.my_game.initialize(game)?;
+
+        self.load_content()
+    }
+
     pub fn load_content(&mut self) -> XnaResult<()> {
-        Ok(())
+        let game = GameHandler {
+            game: self.reference.clone(),
+        };
+
+        self.my_game.load_content(game)
     }
     
     pub fn update(&mut self, game_time: &GameTime) -> XnaResult<()> {
-        unimplemented!()
+        let game = GameHandler {
+            game: self.reference.clone(),
+        };
+
+        self.my_game.update(game_time.clone(), game)
     }
 
     pub fn draw(&mut self, game_time: &GameTime) -> XnaResult<()> {
-        unimplemented!()
+        let game = GameHandler {
+            game: self.reference.clone(),
+        };
+
+        self.my_game.draw(game_time.clone(), game)
     }
 
-    pub fn exit(&mut self) -> XnaResult<()> {
-        self.reference
-            .try_get_mut(null_pointer_exception!())?
-            .game_window.
-            close()
-    }
+
 }
 
 impl Game {
@@ -135,7 +150,7 @@ impl Game {
         Ok(window)
     }
 
-    pub fn set_game_window(&mut self, game_window: &GameWindow) -> XnaResult<()> {
+    fn set_game_window(&mut self, game_window: &GameWindow) -> XnaResult<()> {
         let mut game = self.reference
             .try_get_mut(null_pointer_exception!())?;
 
@@ -153,7 +168,7 @@ impl Game {
         Ok(timer)
     }
 
-    pub fn set_step_timer(&mut self, step_timer: StepTimer) -> XnaResult<()> {
+    fn set_step_timer(&mut self, step_timer: StepTimer) -> XnaResult<()> {
         let mut game = self.reference
             .try_get_mut(null_pointer_exception!())?;
 
@@ -170,13 +185,21 @@ impl Game {
         Ok(is_running)
     }
 
-    pub fn set_is_running(&mut self, is_running: bool) -> XnaResult<()> {
+    fn set_is_running(&mut self, is_running: bool) -> XnaResult<()> {
         let mut game = self.reference
             .try_get_mut(null_pointer_exception!())?;
 
         game.is_running = is_running;
 
         Ok(())
+    }
+
+    pub fn get_game_time(&self) -> XnaResult<GameTime> {
+        let game_time = self.reference
+            .try_get(null_pointer_exception!())?
+            .game_time;
+
+        Ok(game_time)
     }
 }
 
@@ -195,7 +218,10 @@ impl Game {
                     self.tick()?;
                 }
 
-                if msg.message == WM_QUIT || msg.message == 0
+                if msg.message == WM_QUIT
+                    || msg.message == WTS_CONSOLE_DISCONNECT
+                    || msg.message == 0
+                    || !IsWindow(Some(window.platform.get_hwnd())).as_bool()
                 {
                     break;
                 }

@@ -1,10 +1,11 @@
 pub mod game;
 pub mod step_timer;
 pub mod game_window;
+mod game_handler;
 
 use crate::csharp::TimeSpan;
 use crate::framework::game::game_window::WindowsGameWindow;
-use crate::shared::Ptr;
+use crate::shared::{Ptr, XnaResult};
 
 #[derive(Debug, Default, Eq, PartialEq, Clone)]
 pub struct GameWindow {
@@ -63,7 +64,19 @@ pub struct RefGame {
     is_running: bool,
 }
 
-#[derive(Default, PartialEq, Eq, Clone, Debug)]
 pub struct Game {
-    reference: Ptr<RefGame>
+    reference: Ptr<RefGame>,
+    my_game: Box<dyn MyGame>
+}
+
+pub trait MyGame {
+    fn initialize(&mut self, game: GameHandler) -> XnaResult<()>;
+    fn load_content(&mut self, game: GameHandler) -> XnaResult<()>;
+    fn update(&mut self, game_time: GameTime, game: GameHandler) -> XnaResult<()>;
+    fn draw(&mut self, game_time: GameTime, game: GameHandler) -> XnaResult<()>;
+}
+
+#[derive(Default, PartialEq, Eq, Clone, Debug)]
+pub struct GameHandler {
+    game: Ptr<RefGame>,
 }

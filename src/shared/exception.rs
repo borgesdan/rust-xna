@@ -11,7 +11,7 @@ macro_rules! exception {
 #[macro_export]
 macro_rules! null_pointer_exception {
     () => {
-        Exception::throw("The pointer is null", None, file!(), line!(), column!())
+        crate::shared::Exception::throw("The pointer is null", None, file!(), line!(), column!())
     };
 }
 
