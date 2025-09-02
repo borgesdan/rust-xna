@@ -2,10 +2,15 @@ pub mod game;
 pub mod step_timer;
 pub mod game_window;
 pub mod game_handler;
+mod win_game;
+mod win_game_window;
+mod win_step_timer;
 
 use crate::csharp::TimeSpan;
-use crate::framework::game::game_window::WindowsGameWindow;
 use crate::shared::{Ptr, XnaResult};
+
+#[cfg(target_os = "windows")]
+use crate::framework::game::win_game_window::PlatformGameWindow;
 
 #[derive(Debug, Default, Eq, PartialEq, Clone)]
 pub struct GameWindow {
@@ -18,8 +23,8 @@ pub struct GameWindow {
     y: i32,
     is_fullscreen: bool,
 
-    #[cfg(target_os = "windows")]
-    platform: WindowsGameWindow,
+
+    platform: PlatformGameWindow,
 }
 
 #[derive(Default, PartialEq, Eq, Copy, Clone, Debug)]

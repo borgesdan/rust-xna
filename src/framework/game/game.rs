@@ -1,4 +1,3 @@
-use windows::Win32::UI::WindowsAndMessaging::{DispatchMessageW, IsWindow, PeekMessageW, TranslateMessage, MSG, PM_REMOVE, WM_QUIT, WTS_CONSOLE_DISCONNECT};
 use crate::csharp::TimeSpan;
 use crate::framework::game::{Game, MyGame, GameHandler, GameTime, GameWindow, RefGame, StepTimer};
 use crate::{exception, null_pointer_exception};
@@ -58,7 +57,7 @@ impl Game {
         Ok(())
     }
 
-    fn tick(&mut self) -> XnaResult<()> {
+    pub(crate) fn tick(&mut self) -> XnaResult<()> {
         let mut timer = self.get_step_timer()?;
 
         let mut lambda = |timer: &StepTimer| -> XnaResult<()> {
@@ -200,34 +199,4 @@ impl Game {
 
         Ok(game_time)
     }
-}
-
-#[cfg(target_os = "windows")]
-impl Game {
-    fn win_game_loop(&mut self) -> XnaResult<()> {
-        let mut msg = MSG::default();
-        let window = self.get_game_window()?;
-
-        loop {
-            unsafe {
-                if PeekMessageW(&mut msg, Some(window.platform.get_hwnd()), 0, 0, PM_REMOVE).as_bool() {
-                    let _ = TranslateMessage(&msg);
-                    let _ = DispatchMessageW(&msg);
-                } else {
-                    self.tick()?;
-                }
-
-                if msg.message == WM_QUIT
-                    || msg.message == WTS_CONSOLE_DISCONNECT
-                    || msg.message == 0
-                    || !IsWindow(Some(window.platform.get_hwnd())).as_bool()
-                {
-                    break;
-                }
-            }
-        }
-        
-        Ok(())
-    }
-
 }
