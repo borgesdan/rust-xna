@@ -1,7 +1,7 @@
 pub mod game;
 pub mod step_timer;
 pub mod game_window;
-mod game_handler;
+pub mod game_handler;
 
 use crate::csharp::TimeSpan;
 use crate::framework::game::game_window::WindowsGameWindow;

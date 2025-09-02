@@ -2,8 +2,7 @@ use windows::Win32::UI::WindowsAndMessaging::{DispatchMessageW, IsWindow, PeekMe
 use crate::csharp::TimeSpan;
 use crate::framework::game::{Game, MyGame, GameHandler, GameTime, GameWindow, RefGame, StepTimer};
 use crate::{exception, null_pointer_exception};
-use crate::shared::{Ptr, XnaResult, Exception, exception};
-
+use crate::shared::{Ptr, XnaResult};
 
 impl Game {
     pub fn new(my_game: Box<dyn MyGame>) -> Self {

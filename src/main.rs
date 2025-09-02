@@ -8,13 +8,11 @@ mod csharp;
 fn main() {
     let mut game = Game::new(Box::new(Game1::default()));
 
-    let mut result = game.run();
+    let result = game.run();
 
     if result.is_err() {
        println!("{}", result.err().unwrap());
     }
-
-    println!("Hello, world!");
 }
 
 
